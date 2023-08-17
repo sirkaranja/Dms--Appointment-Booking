@@ -1,0 +1,175 @@
+/* CalendarComponent.css */
+/* CalendarComponent.css */
+
+.CalendarComponent {
+  display: flex;
+  justify-content: center; /* Push to the center horizontally */
+  align-items: flex-start;
+  margin: 2rem;
+}
+
+.CalendarContainer {
+  flex: 1;
+  max-width: 600px; /* Increase the maximum width */
+}
+
+.Calendar {
+  max-width: 100%; /* Allow the calendar to take the full width */
+  background: #fff;
+  border: none;
+  box-shadow: none;
+  font-size: 1rem;
+  color: #333;
+  display: inline-block;
+  border-collapse: collapse;
+  text-align: center;
+  margin: 0 auto; /* Center the calendar */
+}
+
+  
+  .Calendar .react-calendar__navigation {
+    border-bottom: 1px solid #ccc;
+    margin-bottom: 1rem;
+  }
+  
+  .Calendar .react-calendar__navigation button {
+    background-color: transparent;
+    border: none;
+    font-size: 1rem;
+    color: #333;
+    cursor: pointer;
+  }
+  
+  .Calendar .react-calendar__navigation button:hover {
+    background-color: #f0f0f0;
+  }
+  
+  .Calendar .react-calendar__navigation button:disabled {
+    cursor: not-allowed;
+  }
+  
+  .Calendar .react-calendar__month-view__days__day {
+    padding: 0.5rem;
+    width: 2rem;
+    height: 2rem;
+    font-weight: bold;
+    border: none;
+    background-color: transparent;
+    transition: background-color 0.3s, color 0.3s;
+    cursor: pointer;
+  }
+  
+  .Calendar .react-calendar__month-view__days__day:enabled:hover {
+    background-color: #007bff;
+    border-radius: 93px;
+    color: #fff;
+  }
+  
+  .Calendar .react-calendar__tile:disabled {
+    color: #999;
+    cursor: not-allowed;
+  }
+  
+ 
+/* ... (previous CSS rules) */
+
+.TimeSelection {
+  display: flex;
+  align-items: center;
+  margin-top: 1rem;
+  width: fit-content;
+}
+
+.TimeDropdowns {
+  display: flex;
+  align-items: center;
+  width: fit-content;
+}
+
+.TimeDropdowns select {
+  margin-right: 0.5rem;
+}
+
+/* ... (other CSS rules) */
+
+.Modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 2rem;
+  border-radius: 5px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+  width: 90%; /* Adjust the width for responsiveness */
+  max-width: 500px; /* Limit the maximum width */
+  }
+  
+  .Modal h2 {
+    margin-bottom: 1rem;
+    font-size: 1.25rem;
+  }
+  
+  .SelectedDateInfo {
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+  
+  .SelectedDate {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+  }
+  
+  .SelectedMonth {
+    font-size: 1rem;
+    color: #666;
+  }
+  
+  .Modal form label {
+    display: block;
+    margin-top: 1rem;
+    font-size: 0.875rem;
+  }
+  
+  .Modal form input,
+  .Modal form textarea {
+    width: 100%;
+    padding: 0.5rem;
+    margin-top: 0.2rem;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    font-size: 0.875rem;
+  }
+  
+  .Modal form button {
+    margin-top: 1rem;
+    padding: 0.5rem 1rem;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.875rem;
+  }
+  
+  .Modal form button[type="button"] {
+    background-color: #f0f0f0;
+    color: #333;
+    margin-left: 0.5rem;
+  }
+  .Modal form select {
+    width: 100%;
+    padding: 0.5rem;
+    margin-top: 0.2rem;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    font-size: 0.875rem;
+    background-color: #fff;
+    color: #333;
+  }
+  
+  .Modal form select option {
+    background-color: #fff;
+    color: #333;
+  }    
