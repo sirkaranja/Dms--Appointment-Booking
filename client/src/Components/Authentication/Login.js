@@ -1,5 +1,6 @@
 import React from 'react';
 import './Login.css'
+import logo from '../../assets/logo.png'
 import {
   MDBBtn,
   MDBContainer,
@@ -19,9 +20,8 @@ function Login() {
           <div className="d-flex flex-column ms-5">
 
             <div className="text-center">
-              <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/lotus.webp"
+              <img src={logo}
                 style={{width: '185px'}} alt="logo" />
-              <h4 className="mt-1 mb-5 pb-1">AppointmentEase</h4>
             </div>
 
             <p>Please login to your account</p>
