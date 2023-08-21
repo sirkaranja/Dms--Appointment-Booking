@@ -123,7 +123,7 @@ const Admin = () => {
             </Nav>
           </Col>
           <Col sm={10} className="main-content">
-            {window.location.pathname === '/dashboard' && (
+            {window.location.pathname === '/' && (
               <div>
                 <h2>Dashboard</h2>
                 <Row>
