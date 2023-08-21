@@ -116,18 +116,26 @@ const Admin = () => {
               <div>
                 <h2>Dashboard</h2>
                 <Row>
-                  <Col sm={6}>
+                  <Col sm={3}>
                     <Card>
                       <Card.Body>
-                        <Card.Title>Total Events</Card.Title>
+                        <Card.Title> Business Appointments</Card.Title>
                         <Card.Text>{totalEvents}</Card.Text>
                       </Card.Body>
                     </Card>
                   </Col>
-                  <Col sm={6}>
+                  <Col sm={3}>
                     <Card>
                       <Card.Body>
-                        <Card.Title>Total Organizers</Card.Title>
+                        <Card.Title>Staff Appointment</Card.Title>
+                        <Card.Text>{totalOrganizers}</Card.Text>
+                      </Card.Body>
+                    </Card>
+                  </Col>
+                  <Col sm={3}>
+                    <Card>
+                      <Card.Body>
+                        <Card.Title>Consultation Appointment</Card.Title>
                         <Card.Text>{totalOrganizers}</Card.Text>
                       </Card.Body>
                     </Card>
