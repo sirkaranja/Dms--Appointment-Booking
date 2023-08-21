@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Table, Pagination, Container, Row, Col, Nav } from 'react-bootstrap';
+import { Card, Table, Pagination, Container, Row, Col, Nav,Button } from 'react-bootstrap';
 import { FaTachometerAlt, FaCalendar, FaChartBar, FaSignOutAlt } from 'react-icons/fa'; // Import icons
 import './style.css';
 
@@ -105,11 +105,11 @@ const Admin = () => {
             <div className="sidebar-title">
             AppointmentEase
             </div>
-            <Nav defaultActiveKey="/dashboard" className="flex-column">
+             <Nav defaultActiveKey="/dashboard" className="flex-column">
               <Nav.Link href="/dashboard" className="sidebar-link">
                 <FaTachometerAlt size={24} /> <span className="sidebar-text">Dashboard</span>
               </Nav.Link>
-              <Nav.Link href="/events" className="sidebar-link">
+              <Nav.Link href="/appointments" className="sidebar-link">
                 <FaCalendar size={24} /> <span className="sidebar-text">Appointments</span>
               </Nav.Link>
               <Nav.Link href="/reports" className="sidebar-link">
@@ -213,9 +213,10 @@ const Admin = () => {
               </div>
             )}
 
-            {window.location.pathname === '/events' && (
+            {window.location.pathname === '/appointments' && (
               <div>
-                <h2>Events</h2>
+                <h2>Appointments</h2>
+                <Button variant="primary" className="add-app" > Add Appointment</Button>
                 {eventsLoading ? (
                   <p>Loading...</p>
                 ) : (
@@ -225,10 +226,9 @@ const Admin = () => {
                         <tr>
                           <th>ID</th>
                           <th>Title</th>
-                          <th>Location</th>
+                          <th>Appointment Category</th>
+                          <th>Time</th>
                           <th>Description</th>
-                          <th>Category</th>
-                          <th>Organizer ID</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -239,7 +239,6 @@ const Admin = () => {
                             <td>{event.location}</td>
                             <td>{event.description}</td>
                             <td>{event.event_category}</td>
-                            <td>{event.organizer_id}</td>
                           </tr>
                         ))}
                       </tbody>
