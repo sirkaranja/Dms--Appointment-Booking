@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Table, Pagination, Container, Row, Col, Nav,Button } from 'react-bootstrap';
 import { FaTachometerAlt, FaCalendar, FaChartBar, FaSignOutAlt } from 'react-icons/fa'; // Import icons
+import ModalComponent from '../Calendar/ModalComponent';
+import logo from '../../assets/logo.png'
 import './style.css';
 
 const ITEMS_PER_PAGE = 8;
@@ -103,7 +105,7 @@ const Admin = () => {
         <Row>
           <Col sm={2} className="sidebar">
             <div className="sidebar-title">
-            AppointmentEase
+            <img src={logo} />
             </div>
              <Nav defaultActiveKey="/dashboard" className="flex-column">
               <Nav.Link href="/dashboard" className="sidebar-link">
@@ -216,7 +218,8 @@ const Admin = () => {
             {window.location.pathname === '/appointments' && (
               <div>
                 <h2>Appointments</h2>
-                <Button variant="primary" className="add-app" > Add Appointment</Button>
+                <Button variant="primary" className="add-app"> Add Appointment</Button>
+                
                 {eventsLoading ? (
                   <p>Loading...</p>
                 ) : (
@@ -265,7 +268,9 @@ const Admin = () => {
                   </div>
                 )}
               </div>
+              
             )}
+          
           </Col>
         </Row>
       </Container>
