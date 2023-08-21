@@ -102,13 +102,12 @@ const Admin = () => {
         <Row>
           <Col sm={2} className="sidebar">
             <div className="sidebar-title">
-              EventMS
+            AppointmentEase
             </div>
             <Nav defaultActiveKey="/dashboard" className="flex-column">
               <Nav.Link href="/dashboard">Dashboard</Nav.Link>
-              <Nav.Link href="/organizers">Organizers</Nav.Link>
-              <Nav.Link href="/events">Events</Nav.Link>
-              <Nav.Link href="/revenue">Revenue</Nav.Link>
+              <Nav.Link href="/organizers">Appointments</Nav.Link>
+              <Nav.Link href="/events">Report</Nav.Link>
               <Nav.Link href="/logout">Logout</Nav.Link>
             </Nav>
           </Col>
