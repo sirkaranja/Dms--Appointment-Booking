@@ -108,7 +108,7 @@ const Admin = () => {
             <img src={logo} />
             </div>
              <Nav defaultActiveKey="/dashboard" className="flex-column">
-              <Nav.Link href="/dashboard" className="sidebar-link">
+              <Nav.Link href="/" className="sidebar-link">
                 <FaTachometerAlt size={24} /> <span className="sidebar-text">Dashboard</span>
               </Nav.Link>
               <Nav.Link href="/appointments" className="sidebar-link">
