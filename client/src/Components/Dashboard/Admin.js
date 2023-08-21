@@ -127,7 +127,7 @@ const Admin = () => {
               <div>
                 <h2>Dashboard</h2>
                 <Row>
-                  <Col sm={3}>
+                  <Col sm={4}>
                     <Card>
                       <Card.Body>
                         <Card.Title> Business Appointments</Card.Title>
@@ -135,7 +135,7 @@ const Admin = () => {
                       </Card.Body>
                     </Card>
                   </Col>
-                  <Col sm={3}>
+                  <Col sm={4}>
                     <Card>
                       <Card.Body>
                         <Card.Title>Staff Appointment</Card.Title>
@@ -143,7 +143,7 @@ const Admin = () => {
                       </Card.Body>
                     </Card>
                   </Col>
-                  <Col sm={3}>
+                  <Col sm={4}>
                     <Card>
                       <Card.Body>
                         <Card.Title>Consultation Appointment</Card.Title>
