@@ -147,7 +147,7 @@
   }
   
   .sidebar a:hover {
-    color: #ffc107;
+    color: #e96824;
   }
   
   /* ... your existing styles ... */
@@ -155,7 +155,7 @@
   .sidebar {
     width: 15%;
     min-height: 100vh;
-    background-color: #3b71ca;
+    background-color: #090a0a;
     color: white;
     padding: 1rem;
     position: fixed;

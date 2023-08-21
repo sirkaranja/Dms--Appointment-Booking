@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, Table, Pagination, Container, Row, Col, Nav,Button } from 'react-bootstrap';
 import { FaTachometerAlt, FaCalendar, FaChartBar, FaSignOutAlt } from 'react-icons/fa'; // Import icons
 import ModalComponent from '../Calendar/ModalComponent';
-import logo from '../../assets/logo.png'
+import logo from '../../assets/logo2.png'
 import './style.css';
 
 const ITEMS_PER_PAGE = 8;
