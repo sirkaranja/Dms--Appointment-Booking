@@ -1,29 +1,157 @@
 /* CalendarComponent.css */
-/* CalendarComponent.css */
 
+/* Calendar component styles */
 .CalendarComponent {
   display: flex;
-  justify-content: center; /* Push to the center horizontally */
+  justify-content: center;
   align-items: flex-start;
   margin: 2rem;
 }
 
 .CalendarContainer {
   flex: 1;
-  max-width: 600px; /* Increase the maximum width */
+  max-width: 600px;
 }
 
 .Calendar {
-  max-width: 100%; /* Allow the calendar to take the full width */
+  max-width: 100%;
   background: #fff;
   border: none;
   box-shadow: none;
-  font-size: 1rem;
+  font-size: 1.25rem; /* Increase the font size */
   color: #333;
   display: inline-block;
   border-collapse: collapse;
   text-align: center;
-  margin: 0 auto; /* Center the calendar */
+  margin: 0 auto;
+}
+
+
+.Calendar .react-calendar__navigation {
+  border-bottom: 1px solid #ccc;
+  margin-bottom: 1rem;
+}
+
+.Calendar .react-calendar__navigation button {
+  background-color: transparent;
+  border: none;
+  font-size: 1rem;
+  color: #333;
+  cursor: pointer;
+}
+
+.Calendar .react-calendar__navigation button:hover {
+  background-color: #f0f0f0;
+}
+
+.Calendar .react-calendar__navigation button:disabled {
+  cursor: not-allowed;
+}
+
+.Calendar .react-calendar__month-view__days__day {
+  padding: 0.5rem;
+  width: 2rem;
+  height: 2rem;
+  font-weight: bold;
+  border: none;
+  background-color: transparent;
+  transition: background-color 0.3s, color 0.3s;
+  cursor: pointer;
+}
+
+.Calendar .react-calendar__month-view__days__day:enabled:hover {
+  background-color: #007bff;
+  border-radius: 93px;
+  color: #fff;
+}
+
+.Calendar .react-calendar__tile:disabled {
+  color: #999;
+  cursor: not-allowed;
+}
+
+/* Modal component styles */
+.Modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 2rem;
+  border-radius: 5px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+  width: 90%;
+  max-width: 500px;
+}
+
+.Modal h2 {
+  margin-bottom: 1rem;
+  font-size: 1.25rem;
+}
+
+.SelectedDateInfo {
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.SelectedDate {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.SelectedMonth {
+  font-size: 1rem;
+  color: #666;
+}
+
+.Modal form label {
+  display: block;
+  margin-top: 1rem;
+  font-size: 0.875rem;
+}
+
+.Modal form input,
+.Modal form textarea {
+  width: 100%;
+  padding: 0.5rem;
+  margin-top: 0.2rem;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  font-size: 0.875rem;
+}
+
+.Modal form button {
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 0.875rem;
+}
+
+.Modal form button[type="button"] {
+  background-color: #f0f0f0;
+  color: #333;
+  margin-left: 0.5rem;
+}
+
+.Modal form select {
+  width: 100%;
+  padding: 0.5rem;
+  margin-top: 0.2rem;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  font-size: 0.875rem;
+  background-color: #fff;
+  color: #333;
+}
+
+.Modal form select option {
+  background-color: #fff;
+  color: #333;
 }
 
   
@@ -173,3 +301,51 @@
     background-color: #fff;
     color: #333;
   }    
+
+/* Style the year selection tab */
+.Calendar .react-calendar__navigation__year {
+  font-size: 1rem;
+  color: #333;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  margin: 0 0.5rem;
+  padding: 0.25rem;
+  border-radius: 3px;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.Calendar .react-calendar__navigation__year:hover {
+  background-color: #f0f0f0;
+}
+
+.Calendar .react-calendar__navigation__year:disabled {
+  color: #999;
+  cursor: not-allowed;
+}
+
+/* Style the year dropdown */
+.Calendar .react-calendar__navigation__year-dropdown {
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 0.25rem;
+  margin: 0 0.5rem;
+  position: relative;
+}
+
+.Calendar .react-calendar__navigation__year-dropdown:hover {
+  background-color: #e0e0e0;
+}
+
+.Calendar .react-calendar__navigation__year-dropdown select {
+  appearance: none; /* Remove browser default styling */
+  background-color: transparent;
+  border: none;
+  font-size: 1rem;
+  color: #333;
+  padding: 0.25rem 0.5rem;
+  width: 100%;
+  cursor: pointer;
+  outline: none;
+}
