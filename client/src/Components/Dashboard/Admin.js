@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Table, Pagination, Container, Row, Col, Nav } from 'react-bootstrap';
+import { FaTachometerAlt, FaCalendar, FaChartBar, FaSignOutAlt } from 'react-icons/fa'; // Import icons
 import './style.css';
 
 const ITEMS_PER_PAGE = 8;
@@ -105,10 +106,18 @@ const Admin = () => {
             AppointmentEase
             </div>
             <Nav defaultActiveKey="/dashboard" className="flex-column">
-              <Nav.Link href="/dashboard">Dashboard</Nav.Link>
-              <Nav.Link href="/organizers">Appointments</Nav.Link>
-              <Nav.Link href="/events">Report</Nav.Link>
-              <Nav.Link href="/logout">Logout</Nav.Link>
+              <Nav.Link href="/dashboard" className="sidebar-link">
+                <FaTachometerAlt size={24} /> <span className="sidebar-text">Dashboard</span>
+              </Nav.Link>
+              <Nav.Link href="/events" className="sidebar-link">
+                <FaCalendar size={24} /> <span className="sidebar-text">Appointments</span>
+              </Nav.Link>
+              <Nav.Link href="/reports" className="sidebar-link">
+                <FaChartBar size={24} /> <span className="sidebar-text">Reports</span>
+              </Nav.Link>
+              <Nav.Link href="/logout" className="sidebar-link">
+                <FaSignOutAlt size={24} /> <span className="sidebar-text">Logout</span>
+              </Nav.Link>
             </Nav>
           </Col>
           <Col sm={10} className="main-content">

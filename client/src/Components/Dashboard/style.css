@@ -60,12 +60,15 @@
     padding: 2rem;
   }
   
+  @media (max-width: 768px) {
   .organizers-table {
     width: 100%;
     border-collapse: collapse;
     border: 1px solid #ccc;
     margin-top: 1rem;
+    font-size: 12px; 
   }
+}
   
   .organizers-table th,
   .organizers-table td {
@@ -97,24 +100,27 @@
   .page-link {
     color: #007bff;
   }
-  /* ... your existing styles ... */
-  
+
+  @media (max-width: 768px) {  
   .info-boxes {
     display: flex;
     justify-content: space-between;
     margin-bottom: 1rem;
+    flex-direction: column;
   }
+  
   
   .info-box {
     border: 1px solid #ccc;
     padding: 1rem;
     text-align: center;
     flex: 1;
-    margin-right: 1rem;
+    margin-right: 0;
+    margin-bottom: 1rem;
+    
   }
-  
-  /* ... your existing styles ... */
-  /* ... your existing styles ... */
+  }
+
   
   .sidebar {
     width: 15%;
@@ -179,3 +185,14 @@
   .sidebar .logout-link {
     margin-top: auto; /* Push logout link to the bottom */
   }
+
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px; /* Adjust the spacing as needed */
+  }
+  
+.sidebar-text {
+    margin-left: 10px; /* Adjust the spacing between icon and text */
+  }
+  
