@@ -1,4 +1,5 @@
-from flask import Flask, jsonify
+from datetime import date
+from flask import Flask, jsonify, request
 from flask_migrate import Migrate
 from models import db, User, Role, Appointment
 
@@ -51,7 +52,70 @@ def get_all_appointments():
             print(f"Error processing appointment {appointment.id}: {e}")
     return jsonify(appointment_list)
 
+#delete method for appointments
+@app.route('/appointments/<int:appointment_id>', methods=['DELETE'])
+def delete_appointment(appointment_id):
+    try:
+        appointment = Appointment.query.get(appointment_id)
+        if appointment:
+            db.session.delete(appointment)
+            db.session.commit()
+            return jsonify({'message': 'Appointment deleted successfully'}), 200
+        else:
+            return jsonify({'error': 'Appointment not found'}), 404
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
 
+
+# Route to update an appointment by ID
+@app.route('/appointments/<int:appointment_id>', methods=['PUT'])
+def update_appointment(appointment_id):
+    if request.method == 'PUT':
+        data = request.json
+        appointment = Appointment.query.get(appointment_id)
+        
+        if not appointment:
+            return jsonify({"message": "Appointment not found"}), 404
+        
+        appointment.title = data['title']
+        appointment.description = data['description']
+        appointment.date = date.fromisoformat(data['date'])
+        appointment.category = data['category']
+        appointment.time = data['time']
+        appointment.status = data['status']
+        appointment.phone_number = data['phone_number']
+        appointment.user_id = data['user_id']
+        
+        db.session.commit()
+        
+        return jsonify({"message": "Appointment updated successfully"}), 200
+    else:
+        return jsonify({"message": "Invalid request method"}), 405
+
+
+#adding new appoitment
+@app.route('/appointments', methods=['POST'])
+def add_appointment():
+    if request.method == 'POST':
+        data = request.json
+        new_appointment = Appointment(
+            title=data['title'],
+            description=data['description'],
+            date=date.fromisoformat(data['date']),
+            category=data['category'],
+            time=data['time'],
+            status=data['status'],
+            phone_number=data['phone_number'],
+            user_id=data['user_id']
+        )
+        
+        db.session.add(new_appointment)
+        db.session.commit()
+        
+        return jsonify({"message": "Appointment added successfully"}), 201
+    else:
+        return jsonify({"message": "Invalid request method"}), 405
 
 if __name__ == '__main__':
     app.run(port=5555)
