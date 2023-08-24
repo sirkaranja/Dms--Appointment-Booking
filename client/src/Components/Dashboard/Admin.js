@@ -1,118 +1,118 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Table, Pagination, Container, Row, Col, Nav,Button } from 'react-bootstrap';
-import { FaTachometerAlt, FaCalendar, FaChartBar, FaSignOutAlt } from 'react-icons/fa'; // Import icons
-import ModalComponent from '../Calendar/ModalComponent';
-import logo from '../../assets/logo2.png'
+import { Card, Table, Pagination, Container, Row, Col, Nav, Button, Modal, Form } from 'react-bootstrap';
+import { FaTachometerAlt, FaCalendar, FaUsers, FaChartBar, FaSignOutAlt } from 'react-icons/fa';
+import logo from '../../assets/logo2.png';
 import './style.css';
 
 const ITEMS_PER_PAGE = 8;
 
 const Admin = () => {
-  const [organizers, setOrganizers] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [appointments, setAppointments] = useState([]);
+  const [appointmentsLoading, setAppointmentsLoading] = useState(true);
+  const [currentAppointments, setCurrentAppointments] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [events, setEvents] = useState([]);
-  const [eventsLoading, setEventsLoading] = useState(true);
-  const [currentEvents, setCurrentEvents] = useState([]);
-  const [totalEvents, setTotalEvents] = useState(0);
-  const [totalOrganizers, setTotalOrganizers] = useState(0);
+  const [users, setUsers] = useState([]);
+  const [usersLoading, setUsersLoading] = useState(true);
+  const [currentUsers, setCurrentUsers] = useState([]);
+  const [appointmentCounts, setAppointmentCounts] = useState({
+    Approved: 0,
+    Rejected: 0,
+    Rescheduled: 0,
+    Referred: 0,
+  });
+  const [showModal, setShowModal] = useState(false);
+  const [showUserModal, setShowUserModal] = useState(false);
 
   useEffect(() => {
-    async function fetchOrganizers() {
+    // Fetch appointments
+    async function fetchAppointments() {
       try {
-        const response = await fetch('http://127.0.0.1:5000/organizers');
+        const response = await fetch('http://127.0.0.1:5000/appointments');
         const data = await response.json();
 
-        // Assuming the API response has an 'organizers' property
-        if (Array.isArray(data.organizers)) {
-          setOrganizers(data.organizers);
+        if (Array.isArray(data)) {
+          setAppointments(data);
+          setCurrentAppointments(data.slice(0, ITEMS_PER_PAGE));
         } else {
           console.error('Invalid data format:', data);
         }
 
-        setLoading(false);
+        setAppointmentsLoading(false);
       } catch (error) {
-        console.error('Error fetching organizers:', error);
-        setLoading(false);
+        console.error('Error fetching appointments:', error);
+        setAppointmentsLoading(false);
       }
     }
 
-    async function fetchEvents() {
-      try {
-        const response = await fetch('http://127.0.0.1:5000/events');
-        const data = await response.json();
-
-        // Assuming the API response has an 'events' property
-        if (Array.isArray(data.events)) {
-          setEvents(data.events);
-          setCurrentEvents(data.events.slice(0, ITEMS_PER_PAGE)); // Initial events on page 1
-        } else {
-          console.error('Invalid data format:', data);
-        }
-
-        setEventsLoading(false);
-      } catch (error) {
-        console.error('Error fetching events:', error);
-        setEventsLoading(false);
-      }
-    }
-
-    async function fetchTotalEvents() {
-      try {
-        const response = await fetch('http://127.0.0.1:5000/get_total_events');
-        const data = await response.json();
-        setTotalEvents(data.total_events);
-      } catch (error) {
-        console.error('Error fetching total events:', error);
-      }
-    }
-
-    async function fetchTotalOrganizers() {
-      try {
-        const response = await fetch('http://127.0.0.1:5000/total_organizers');
-        const data = await response.json();
-        setTotalOrganizers(data.total_organizers);
-      } catch (error) {
-        console.error('Error fetching total organizers:', error);
-      }
-    }
-
-    fetchOrganizers();
-    fetchEvents();
-    fetchTotalEvents();
-    fetchTotalOrganizers();
+    fetchAppointments();
   }, []);
 
-  const filteredOrganizers = organizers.filter((organizer) =>
-    organizer.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  useEffect(() => {
+    // Fetch users
+    async function fetchUsers() {
+      try {
+        const response = await fetch('http://127.0.0.1:5000/users');
+        const data = await response.json();
 
-  const totalPages = Math.ceil(events.length / ITEMS_PER_PAGE);
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const endIndex = startIndex + ITEMS_PER_PAGE;
+        if (Array.isArray(data)) {
+          setUsers(data);
+          setCurrentUsers(data);
+        } else {
+          console.error('Invalid data format:', data);
+        }
 
-  const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber);
-    const newStartIndex = (pageNumber - 1) * ITEMS_PER_PAGE;
-    const newEndIndex = newStartIndex + ITEMS_PER_PAGE;
-    setCurrentEvents(events.slice(newStartIndex, newEndIndex));
+        setUsersLoading(false);
+      } catch (error) {
+        console.error('Error fetching users:', error);
+        setUsersLoading(false);
+      }
+    }
+
+    fetchUsers();
+  }, []);
+
+  useEffect(() => {
+    // Fetch appointment counts
+    const counts = {
+      Approved: 0,
+      Rejected: 0,
+      Rescheduled: 0,
+      Referred: 0,
+    };
+
+    appointments.forEach((appointment) => {
+      if (appointment.status in counts) {
+        counts[appointment.status]++;
+      }
+    });
+
+    setAppointmentCounts(counts);
+  }, [appointments]);
+
+  const toggleModal = () => {
+    setShowModal(!showModal);
   };
 
+  const toggleUserModal = () => {
+    setShowUserModal(!showUserModal);
+  };
   return (
     <div className="App">
       <Container fluid>
         <Row>
           <Col sm={2} className="sidebar">
             <div className="sidebar-title">
-            <img src={logo} />
+              <img src={logo} alt="Logo" />
             </div>
-             <Nav defaultActiveKey="/dashboard" className="flex-column">
+            <Nav defaultActiveKey="/dashboard" className="flex-column">
               <Nav.Link href="/" className="sidebar-link">
                 <FaTachometerAlt size={24} /> <span className="sidebar-text">Dashboard</span>
               </Nav.Link>
               <Nav.Link href="/appointments" className="sidebar-link">
                 <FaCalendar size={24} /> <span className="sidebar-text">Appointments</span>
+              </Nav.Link>
+              <Nav.Link href="/users" className="sidebar-link">
+                <FaUsers size={24} /> <span className="sidebar-text">Users</span>
               </Nav.Link>
               <Nav.Link href="/reports" className="sidebar-link">
                 <FaChartBar size={24} /> <span className="sidebar-text">Reports</span>
@@ -123,104 +123,33 @@ const Admin = () => {
             </Nav>
           </Col>
           <Col sm={10} className="main-content">
+            {/* Dashboard */}
             {window.location.pathname === '/' && (
               <div>
                 <h2>Dashboard</h2>
                 <Row>
-                  <Col sm={4}>
-                    <Card>
-                      <Card.Body>
-                        <Card.Title> Business Appointments</Card.Title>
-                        <Card.Text>{totalEvents}</Card.Text>
-                      </Card.Body>
-                    </Card>
-                  </Col>
-                  <Col sm={4}>
-                    <Card>
-                      <Card.Body>
-                        <Card.Title>Staff Appointment</Card.Title>
-                        <Card.Text>{totalOrganizers}</Card.Text>
-                      </Card.Body>
-                    </Card>
-                  </Col>
-                  <Col sm={4}>
-                    <Card>
-                      <Card.Body>
-                        <Card.Title>Consultation Appointment</Card.Title>
-                        <Card.Text>{totalOrganizers}</Card.Text>
-                      </Card.Body>
-                    </Card>
-                  </Col>
+                  {Object.keys(appointmentCounts).map((status) => (
+                    <Col sm={3} key={status}>
+                      <Card>
+                        <Card.Body>
+                          <Card.Title>{status}</Card.Title>
+                          <Card.Text>{appointmentCounts[status]}</Card.Text>
+                        </Card.Body>
+                      </Card>
+                    </Col>
+                  ))}
                 </Row>
               </div>
             )}
 
-            {window.location.pathname === '/organizers' && (
-              <div>
-                <h2>Organizers</h2>
-                <input
-                  type="text"
-                  placeholder="Search by name"
-                  value={searchTerm}
-                  onChange={(e) => {
-                    setSearchTerm(e.target.value);
-                    setCurrentPage(1);
-                  }}
-                />
-                {loading ? (
-                  <p>Loading...</p>
-                ) : (
-                  <div>
-                    <Table striped bordered hover className="organizers-table">
-                      <thead>
-                        <tr>
-                          <th>Name</th>
-                          <th>Email</th>
-                          <th>Phone Number</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {filteredOrganizers
-                          .slice(startIndex, endIndex)
-                          .map((organizer, index) => (
-                            <tr key={index}>
-                              <td>{organizer.name}</td>
-                              <td>{organizer.email}</td>
-                              <td>{organizer.phone_number}</td>
-                            </tr>
-                          ))}
-                      </tbody>
-                    </Table>
-                    <Pagination>
-                    <Pagination.Prev
-                        disabled={currentPage === 1}
-                        onClick={() => handlePageChange(currentPage - 1)}
-                      />
-                      {Array.from({ length: totalPages }, (_, index) => (
-                        <Pagination.Item
-                          key={index + 1}
-                          active={index + 1 === currentPage}
-                          onClick={() => handlePageChange(index + 1)}
-                        >
-                          {index + 1}
-                        </Pagination.Item>
-                      ))}
-                      <Pagination.Next
-                        disabled={currentPage === totalPages}
-                        onClick={() => handlePageChange(currentPage + 1)}
-                      />
-                    </Pagination>
-                  </div>
-                )}
-              </div>
-            )}
-
+            {/* Appointments */}
             {window.location.pathname === '/appointments' && (
               <div>
                 <h2>Appointments</h2>
-                <Button variant="primary" className="add-app"> Add Appointment</Button>
-                
-                {eventsLoading ? (
+                <Button variant="primary" className="add-button" onClick={toggleModal}>
+                  Add Appointment
+                </Button>
+                {appointmentsLoading ? (
                   <p>Loading...</p>
                 ) : (
                   <div>
@@ -229,51 +158,127 @@ const Admin = () => {
                         <tr>
                           <th>ID</th>
                           <th>Title</th>
-                          <th>Appointment Category</th>
+                          <th>Category</th>
+                          <th>Date</th>
                           <th>Time</th>
                           <th>Description</th>
+                          <th>Status</th>
+                          <th>Phone Number</th>
                         </tr>
                       </thead>
                       <tbody>
-                        {currentEvents.map((event) => (
-                          <tr key={event.id}>
-                            <td>{event.id}</td>
-                            <td>{event.title}</td>
-                            <td>{event.location}</td>
-                            <td>{event.description}</td>
-                            <td>{event.event_category}</td>
+                        {currentAppointments.map((appointment) => (
+                          <tr key={appointment.id}>
+                            <td>{appointment.id}</td>
+                            <td>{appointment.title}</td>
+                            <td>{appointment.category}</td>
+                            <td>{appointment.date}</td>
+                            <td>{appointment.time}</td>
+                            <td>{appointment.description}</td>
+                            <td>{appointment.status}</td>
+                            <td>{appointment.phone_number}</td>
                           </tr>
                         ))}
                       </tbody>
                     </Table>
                     <Pagination>
-                    <Pagination.Prev
-                        disabled={currentPage === 1}
-                        onClick={() => handlePageChange(currentPage - 1)}
-                      />
-                      {Array.from({ length: totalPages }, (_, index) => (
-                        <Pagination.Item
-                          key={index + 1}
-                          active={index + 1 === currentPage}
-                          onClick={() => handlePageChange(index + 1)}
-                        >
-                          {index + 1}
-                        </Pagination.Item>
-                      ))}
-                      <Pagination.Next
-                        disabled={currentPage === totalPages}
-                        onClick={() => handlePageChange(currentPage + 1)}
-                      />
+                      {/* Pagination controls */}
                     </Pagination>
                   </div>
                 )}
               </div>
-              
             )}
-          
+
+            {/* Users */}
+            {window.location.pathname === '/users' && (
+              <div>
+                <h2>Users</h2>
+                <Button variant="primary" className="add-button" onClick={toggleUserModal}>
+                  Add User
+                </Button>
+                {usersLoading ? (
+                  <p>Loading...</p>
+                ) : (
+                  <div>
+                    <Table striped bordered hover>
+                      <thead>
+                        <tr>
+                          <th>ID</th>
+                          <th>Name</th>
+                          <th>Email</th>
+                          <th>Role ID</th>
+                          <th>Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {currentUsers.map((user) => (
+                          <tr key={user.id}>
+                            <td>{user.id}</td>
+                            <td>{user.name}</td>
+                            <td>{user.email}</td>
+                            <td>{user.role_id}</td>
+                            <td>
+                              <Button variant="info" size="sm">Edit</Button>
+                              <Button variant="danger" size="sm">Delete</Button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </Table>
+                  </div>
+                )}
+              </div>
+            )}
           </Col>
         </Row>
       </Container>
+
+      {/* Modal for adding appointments */}
+      <Modal show={showModal} onHide={toggleModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>Add Appointment</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Group controlId="title">
+              <Form.Label>Title</Form.Label>
+              <Form.Control type="text"  />
+            </Form.Group>
+            <Form.Group controlId="category">
+              <Form.Label>Category</Form.Label>
+              <Form.Control type="text"  />
+            </Form.Group>
+            <Form.Group controlId="category">
+              <Form.Label>Date</Form.Label>
+              <Form.Control type="date"  />
+            </Form.Group>
+            <Form.Group controlId="category">
+              <Form.Label>Time</Form.Label>
+              <Form.Control type="time" />
+            </Form.Group>
+            <Form.Group controlId="category">
+              <Form.Label>Description</Form.Label>
+              <Form.Control type="text" />
+            </Form.Group>
+            <Form.Group controlId="category">
+              <Form.Label>Status</Form.Label>
+              <Form.Control type="text"/>
+            </Form.Group>
+            <Form.Group controlId="category">
+              <Form.Label>Phone Number</Form.Label>
+              <Form.Control type="number"  />
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={toggleModal}>
+            Close
+          </Button>
+          <Button variant="primary" >
+            Save
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };
