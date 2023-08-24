@@ -279,6 +279,41 @@ const Admin = () => {
           </Button>
         </Modal.Footer>
       </Modal>
+      
+      {/* Modal for adding users */}
+      <Modal show={showUserModal} onHide={toggleUserModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>Add User</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+          <Form.Group controlId="text">
+              <Form.Label>Name</Form.Label>
+              <Form.Control type="text" /* ...other props */ />
+            </Form.Group>
+            <Form.Group controlId="email">
+              <Form.Label>Email</Form.Label>
+              <Form.Control type="email" /* ...other props */ />
+            </Form.Group>
+            <Form.Group controlId="password">
+              <Form.Label>Password</Form.Label>
+              <Form.Control type="password" /* ...other props */ />
+            </Form.Group>
+            <Form.Group controlId="role">
+              <Form.Label>Role ID</Form.Label>
+              <Form.Control type="number" /* ...other props */ />
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={toggleUserModal}>
+            Close
+          </Button>
+          <Button variant="primary" /* handle user form submission */>
+            Save
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };
