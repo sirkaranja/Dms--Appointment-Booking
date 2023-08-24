@@ -1,9 +1,11 @@
 from datetime import date
 from flask import Flask, jsonify, request
 from flask_migrate import Migrate
+from flask_cors import CORS
 from models import db, User, Role, Appointment
 
 app = Flask(__name__)
+CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///appointments.db' 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -116,6 +118,60 @@ def add_appointment():
         return jsonify({"message": "Appointment added successfully"}), 201
     else:
         return jsonify({"message": "Invalid request method"}), 405
+
+
+#method for calculating number of appointments based on categories
+@app.route('/category_counts', methods=['GET'])
+def get_category_counts():
+    try:
+        # Calculate category counts from the appointments in the database
+        category_counts = {
+            'Business Appointments': Appointment.query.filter_by(category='Business Appointments').count(),
+            'Staff Appointment': Appointment.query.filter_by(category='Staff Appointment').count(),
+            'Departmental Updates': Appointment.query.filter_by(category='Departmental Updates').count()
+        }
+        return jsonify({'category_counts': category_counts})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+
+#method for  adding new users 
+@app.route('/users', methods=['POST'])
+def add_user():
+    try:
+        data = request.get_json()
+        new_user = User(
+            name=data['name'],
+            email=data['email'],
+            password=data['password'],
+            role_id=data['role_id']
+        )
+        db.session.add(new_user)
+        db.session.commit()
+        return jsonify({'message': 'User added successfully'}), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
+    
+
+
+@app.route('/appointment_counts', methods=['GET'])
+def get_appointment_counts():
+    status_counts = {}
+
+    try:
+        appointments = Appointment.query.all()
+        for appointment in appointments:
+            status = appointment.status
+            if status in status_counts:
+                status_counts[status] += 1
+            else:
+                status_counts[status] = 1
+    except Exception as e:
+        return jsonify({"error": str(e)})
+
+    return jsonify(status_counts)
 
 if __name__ == '__main__':
     app.run(port=5555)
