@@ -1,6 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Table, Pagination, Container, Row, Col, Nav, Button, Modal, Form } from 'react-bootstrap';
-import { FaTachometerAlt, FaCalendar, FaUsers, FaChartBar, FaSignOutAlt } from 'react-icons/fa';
+import {
+  Card,
+  Table,
+  Pagination,
+  Container,
+  Row,
+  Col,
+  Nav,
+  Button,
+  Modal,
+  Form,
+} from 'react-bootstrap';
+import {
+  FaTachometerAlt,
+  FaCalendar,
+  FaUsers,
+  FaChartBar,
+  FaSignOutAlt,
+} from 'react-icons/fa';
 import logo from '../../assets/logo2.png';
 import './style.css';
 
@@ -22,6 +39,12 @@ const Admin = () => {
   });
   const [showModal, setShowModal] = useState(false);
   const [showUserModal, setShowUserModal] = useState(false);
+  const [newUser, setNewUser] = useState({
+    name: '',
+    email: '',
+    password: '',
+    role_id: 0,
+  });
 
   useEffect(() => {
     // Fetch appointments
@@ -44,10 +67,6 @@ const Admin = () => {
       }
     }
 
-    fetchAppointments();
-  }, []);
-
-  useEffect(() => {
     // Fetch users
     async function fetchUsers() {
       try {
@@ -68,10 +87,6 @@ const Admin = () => {
       }
     }
 
-    fetchUsers();
-  }, []);
-
-  useEffect(() => {
     // Fetch appointment counts
     const counts = {
       Approved: 0,
@@ -87,7 +102,39 @@ const Admin = () => {
     });
 
     setAppointmentCounts(counts);
-  }, [appointments]);
+
+    fetchAppointments();
+    fetchUsers();
+  }, []);
+
+  const handleUserInputChange = (event) => {
+    const { name, value } = event.target;
+    setNewUser((prevUser) => ({
+      ...prevUser,
+      [name]: value,
+    }));
+  };
+
+  const handleUserSubmit = async () => {
+    try {
+      const response = await fetch('http://127.0.0.1:5000/users', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newUser),
+      });
+
+      if (response.ok) {
+        fetchUsers();
+        toggleUserModal();
+      } else {
+        console.error('Failed to add user');
+      }
+    } catch (error) {
+      console.error('Error adding user:', error);
+    }
+  };
 
   const toggleModal = () => {
     setShowModal(!showModal);
@@ -96,6 +143,7 @@ const Admin = () => {
   const toggleUserModal = () => {
     setShowUserModal(!showUserModal);
   };
+
   return (
     <div className="App">
       <Container fluid>
@@ -123,7 +171,6 @@ const Admin = () => {
             </Nav>
           </Col>
           <Col sm={10} className="main-content">
-            {/* Dashboard */}
             {window.location.pathname === '/' && (
               <div>
                 <h2>Dashboard</h2>
@@ -142,7 +189,6 @@ const Admin = () => {
               </div>
             )}
 
-            {/* Appointments */}
             {window.location.pathname === '/appointments' && (
               <div>
                 <h2>Appointments</h2>
@@ -189,7 +235,6 @@ const Admin = () => {
               </div>
             )}
 
-            {/* Users */}
             {window.location.pathname === '/users' && (
               <div>
                 <h2>Users</h2>
@@ -233,7 +278,6 @@ const Admin = () => {
         </Row>
       </Container>
 
-      {/* Modal for adding appointments */}
       <Modal show={showModal} onHide={toggleModal}>
         <Modal.Header closeButton>
           <Modal.Title>Add Appointment</Modal.Title>
@@ -242,15 +286,15 @@ const Admin = () => {
           <Form>
             <Form.Group controlId="title">
               <Form.Label>Title</Form.Label>
-              <Form.Control type="text"  />
+              <Form.Control type="text" />
             </Form.Group>
             <Form.Group controlId="category">
               <Form.Label>Category</Form.Label>
-              <Form.Control type="text"  />
+              <Form.Control type="text" />
             </Form.Group>
             <Form.Group controlId="category">
               <Form.Label>Date</Form.Label>
-              <Form.Control type="date"  />
+              <Form.Control type="date" />
             </Form.Group>
             <Form.Group controlId="category">
               <Form.Label>Time</Form.Label>
@@ -262,11 +306,11 @@ const Admin = () => {
             </Form.Group>
             <Form.Group controlId="category">
               <Form.Label>Status</Form.Label>
-              <Form.Control type="text"/>
+              <Form.Control type="text" />
             </Form.Group>
             <Form.Group controlId="category">
               <Form.Label>Phone Number</Form.Label>
-              <Form.Control type="number"  />
+              <Form.Control type="number" />
             </Form.Group>
           </Form>
         </Modal.Body>
@@ -274,7 +318,61 @@ const Admin = () => {
           <Button variant="secondary" onClick={toggleModal}>
             Close
           </Button>
-          <Button variant="primary" >
+          <Button variant="primary">
+            Save
+          </Button>
+        </Modal.Footer>
+      </Modal>
+      
+      <Modal show={showUserModal} onHide={toggleUserModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>Add User</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Group controlId="name">
+              <Form.Label>Name</Form.Label>
+              <Form.Control
+                type="text"
+                name="name"
+                value={newUser.name}
+                onChange={handleUserInputChange}
+              />
+            </Form.Group>
+            <Form.Group controlId="email">
+              <Form.Label>Email</Form.Label>
+              <Form.Control
+                type="email"
+                name="email"
+                value={newUser.email}
+                onChange={handleUserInputChange}
+              />
+            </Form.Group>
+            <Form.Group controlId="password">
+              <Form.Label>Password</Form.Label>
+              <Form.Control
+                type="password"
+                name="password"
+                value={newUser.password}
+                onChange={handleUserInputChange}
+              />
+            </Form.Group>
+            <Form.Group controlId="role">
+              <Form.Label>Role ID</Form.Label>
+              <Form.Control
+                type="number"
+                name="role_id"
+                value={newUser.role_id}
+                onChange={handleUserInputChange}
+              />
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={toggleUserModal}>
+            Close
+          </Button>
+          <Button variant="primary" onClick={handleUserSubmit}>
             Save
           </Button>
         </Modal.Footer>
