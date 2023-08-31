@@ -159,22 +159,6 @@ def add_user():
     
 
 
-@app.route('/appointment_counts', methods=['GET'])
-def get_appointment_counts():
-    status_counts = {}
-
-    try:
-        appointments = Appointment.query.all()
-        for appointment in appointments:
-            status = appointment.status
-            if status in status_counts:
-                status_counts[status] += 1
-            else:
-                status_counts[status] = 1
-    except Exception as e:
-        return jsonify({"error": str(e)})
-
-    return jsonify(status_counts)
 
 if __name__ == '__main__':
     app.run(port=5555)
