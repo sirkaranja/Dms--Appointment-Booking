@@ -16,6 +16,8 @@ migrate = Migrate(app, db)  # Then set up the migrations
 @app.route('/')
 def home():
     return "<h1>dashboard</h1>"
+
+#appointment methods
 # Define the route to get all appointments
 @app.route('/appointments', methods=['GET'])
 def get_all_appointments():
@@ -79,7 +81,9 @@ def update_appointment(appointment_id):
         return jsonify({"message": "Appointment updated successfully"}), 200
     else:
         return jsonify({"message": "Invalid request method"}), 405
+    
 
+#add new appointment
 @app.route('/appointments', methods=['POST'])
 def add_appointment():
     if request.method == 'POST':
