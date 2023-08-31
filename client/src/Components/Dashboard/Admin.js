@@ -36,6 +36,18 @@ const Admin = () => {
   const [editingUser, setEditingUser] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
 
+  // ... (other state variables)
+
+  const [newAppointment, setNewAppointment] = useState({
+    title: '',
+    category: '',
+    date: '',
+    time: '',
+    description: '',
+    status: '',
+    phone_number: '',
+  });
+
   const [appointmentCounts, setAppointmentCounts] = useState({
     'Approved': 0,
     'Rejected': 0,
@@ -197,6 +209,27 @@ const deleteUser = async (userId) => {
     }
   } catch (error) {
     console.error('Error deleting user:', error);
+  }
+};
+
+const handleAddAppointment = async () => {
+  try {
+    const response = await fetch('http://127.0.0.1:5000/appointments', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(newAppointment),
+    });
+
+    if (response.ok) {
+      fetchAppointments();
+      toggleModal();
+    } else {
+      console.error('Failed to add appointment');
+    }
+  } catch (error) {
+    console.error('Error adding appointment:', error);
   }
 };
 
@@ -384,17 +417,26 @@ const deleteUser = async (userId) => {
           </Col>
         </Row>
       </Container>
-
       <Modal show={showModal} onHide={toggleModal}>
-  <Modal.Header closeButton>
-    <Modal.Title>Add Appointment</Modal.Title>
-  </Modal.Header>
-  <Modal.Body>
-    <Form>
-      <Form.Group controlId="title">
-        <Form.Label>Title</Form.Label>
-        <Form.Control type="text" />
-      </Form.Group>
+        <Modal.Header closeButton>
+          <Modal.Title>Add Appointment</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Group controlId="title">
+              <Form.Label>Title</Form.Label>
+              <Form.Control
+                type="text"
+                name="title"
+                value={newAppointment.title}
+                onChange={(e) =>
+                  setNewAppointment({
+                    ...newAppointment,
+                    title: e.target.value,
+                  })
+                }
+              />
+            </Form.Group>
       <Form.Group controlId="category">
         <Form.Label>Category</Form.Label>
         <Form.Control as="select">
@@ -434,9 +476,9 @@ const deleteUser = async (userId) => {
     <Button variant="secondary" onClick={toggleModal}>
       Close
     </Button>
-    <Button variant="primary">
-      Save
-    </Button>
+    <Button variant="primary" onClick={handleAddAppointment}>
+            Save
+          </Button>
   </Modal.Footer>
 </Modal>
 
