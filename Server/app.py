@@ -16,21 +16,8 @@ migrate = Migrate(app, db)  # Then set up the migrations
 @app.route('/')
 def home():
     return "<h1>dashboard</h1>"
-# Define the route to get all users
-@app.route('/users', methods=['GET'])
-def get_all_users():
-    users = User.query.all()
-    user_list = []
-    for user in users:
-        user_data = {
-            'id': user.id,
-            'name': user.name,
-            'email': user.email,
-            'role': user.role_id
-        }
-        user_list.append(user_data)
-    return jsonify(user_list)
 
+#appointment methods
 # Define the route to get all appointments
 @app.route('/appointments', methods=['GET'])
 def get_all_appointments():
@@ -94,7 +81,9 @@ def update_appointment(appointment_id):
         return jsonify({"message": "Appointment updated successfully"}), 200
     else:
         return jsonify({"message": "Invalid request method"}), 405
+    
 
+#add new appointment
 @app.route('/appointments', methods=['POST'])
 def add_appointment():
     if request.method == 'POST':
@@ -138,7 +127,7 @@ def get_category_counts():
         return jsonify({'error': str(e)}), 500
 
 
-
+#user methods
 #method for  adding new users 
 @app.route('/users', methods=['POST'])
 def add_user():
@@ -157,8 +146,56 @@ def add_user():
         db.session.rollback()
         return jsonify({'error': str(e)}), 500
     
+# Define the route to get all users
+@app.route('/users', methods=['GET'])
+def get_all_users():
+    users = User.query.all()
+    user_list = []
+    for user in users:
+        user_data = {
+            'id': user.id,
+            'name': user.name,
+            'email': user.email,
+            'role': user.role_id
+        }
+        user_list.append(user_data)
+    return jsonify(user_list)
+
+#delete user route
+@app.route('/users/<int:user_id>', methods=['DELETE'])
+def delete_user(user_id):
+    try:
+        user= User.query.get(user_id)
+        if user:
+            db.session.delete(user)
+            db.session.commit()
+            return jsonify({'message': 'User deleted successfully'}), 200
+        else:
+            return jsonify({'message': "User not found"}), 400
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
 
 
+#update method for users
+@app.route('/users/<int:user_id>', methods=['PUT'])
+def update_user(user_id):
+    if request.method =='PUT':
+        data= request.json
+        user= User.query.get(user_id)
+
+        if not user:
+            return jsonify({"message":"user not found"}), 400
+        
+        user.name=data['name']
+        user.email=data['email']
+        user.password= data['password']
+        user.role_id= data['role_id']
+
+        db.session.commit()
+        return jsonify({"message":"User updated successfully"}), 200
+    else:
+        return jsonify({'message': "Invalid request method"}), 405
 
 if __name__ == '__main__':
     app.run(port=5555)

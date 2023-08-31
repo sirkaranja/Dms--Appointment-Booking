@@ -32,10 +32,10 @@ const Admin = () => {
   const [usersLoading, setUsersLoading] = useState(true);
   const [currentUsers, setCurrentUsers] = useState([]);
   const [appointmentCounts, setAppointmentCounts] = useState({
-    Approved: 0,
-    Rejected: 0,
-    Rescheduled: 0,
-    Referred: 0,
+    'Approved': 0,
+    'Rejected': 0,
+    'Rescheduled': 0,
+    'Referred': 0,
   });
   const [showModal, setShowModal] = useState(false);
   const [showUserModal, setShowUserModal] = useState(false);
@@ -47,7 +47,6 @@ const Admin = () => {
   });
 
   useEffect(() => {
-    // Fetch appointments
     async function fetchAppointments() {
       try {
         const response = await fetch('http://127.0.0.1:5000/appointments');
@@ -55,6 +54,22 @@ const Admin = () => {
 
         if (Array.isArray(data)) {
           setAppointments(data);
+
+          const counts = {
+            'Approved': 0,
+            'Rejected': 0,
+            'Rescheduled': 0,
+            'Referred': 0,
+          };
+
+          data.forEach((appointment) => {
+            if (appointment.status in counts) {
+              counts[appointment.status]++;
+            }
+          });
+
+          setAppointmentCounts(counts);
+
           setCurrentAppointments(data.slice(0, ITEMS_PER_PAGE));
         } else {
           console.error('Invalid data format:', data);
@@ -67,7 +82,6 @@ const Admin = () => {
       }
     }
 
-    // Fetch users
     async function fetchUsers() {
       try {
         const response = await fetch('http://127.0.0.1:5000/users');
@@ -87,22 +101,6 @@ const Admin = () => {
       }
     }
 
-    // Fetch appointment counts
-    const counts = {
-      Approved: 0,
-      Rejected: 0,
-      Rescheduled: 0,
-      Referred: 0,
-    };
-
-    appointments.forEach((appointment) => {
-      if (appointment.status in counts) {
-        counts[appointment.status]++;
-      }
-    });
-
-    setAppointmentCounts(counts);
-
     fetchAppointments();
     fetchUsers();
   }, []);
@@ -114,6 +112,32 @@ const Admin = () => {
       [name]: value,
     }));
   };
+
+
+//to delete user
+const handleDeleteUser = (userId) => {
+  const deleteUserConfirmation = window.confirm("Are you sure you want to delete this user?");
+  if (deleteUserConfirmation) {
+    deleteUser(userId);
+  }
+};
+
+const deleteUser = async (userId) => {
+  try {
+    const response = await fetch(`http://127.0.0.1:5000/users/${userId}`, {
+      method: 'DELETE',
+    });
+
+    if (response.ok) {
+      // Remove the deleted user from the currentUsers state
+      setCurrentUsers((prevUsers) => prevUsers.filter(user => user.id !== userId));
+    } else {
+      console.error('Failed to delete user');
+    }
+  } catch (error) {
+    console.error('Error deleting user:', error);
+  }
+};
 
   const handleUserSubmit = async () => {
     try {
@@ -154,19 +178,23 @@ const Admin = () => {
             </div>
             <Nav defaultActiveKey="/dashboard" className="flex-column">
               <Nav.Link href="/" className="sidebar-link">
-                <FaTachometerAlt size={24} /> <span className="sidebar-text">Dashboard</span>
+                <FaTachometerAlt size={24} />{' '}
+                <span className="sidebar-text">Dashboard</span>
               </Nav.Link>
               <Nav.Link href="/appointments" className="sidebar-link">
-                <FaCalendar size={24} /> <span className="sidebar-text">Appointments</span>
+                <FaCalendar size={24} />{' '}
+                <span className="sidebar-text">Appointments</span>
               </Nav.Link>
               <Nav.Link href="/users" className="sidebar-link">
                 <FaUsers size={24} /> <span className="sidebar-text">Users</span>
               </Nav.Link>
               <Nav.Link href="/reports" className="sidebar-link">
-                <FaChartBar size={24} /> <span className="sidebar-text">Reports</span>
+                <FaChartBar size={24} />{' '}
+                <span className="sidebar-text">Reports</span>
               </Nav.Link>
               <Nav.Link href="/logout" className="sidebar-link">
-                <FaSignOutAlt size={24} /> <span className="sidebar-text">Logout</span>
+                <FaSignOutAlt size={24} />{' '}
+                <span className="sidebar-text">Logout</span>
               </Nav.Link>
             </Nav>
           </Col>
@@ -264,7 +292,8 @@ const Admin = () => {
                             <td>{user.role_id}</td>
                             <td>
                               <Button variant="info" size="sm">Edit</Button>
-                              <Button variant="danger" size="sm">Delete</Button>
+                              <Button variant="danger" size="sm" onClick={() => handleDeleteUser(user.id)}>Delete</Button>
+
                             </td>
                           </tr>
                         ))}
