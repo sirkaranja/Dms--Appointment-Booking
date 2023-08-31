@@ -19,6 +19,8 @@ import {
   FaSignOutAlt,
 } from 'react-icons/fa';
 import logo from '../../assets/logo2.png';
+import { Bar } from 'react-chartjs-2';
+
 import './style.css';
 
 const ITEMS_PER_PAGE = 8;
@@ -31,6 +33,9 @@ const Admin = () => {
   const [users, setUsers] = useState([]);
   const [usersLoading, setUsersLoading] = useState(true);
   const [currentUsers, setCurrentUsers] = useState([]);
+  const [editingUser, setEditingUser] = useState(null);
+  const [showEditModal, setShowEditModal] = useState(false);
+
   const [appointmentCounts, setAppointmentCounts] = useState({
     'Approved': 0,
     'Rejected': 0,
@@ -45,6 +50,11 @@ const Admin = () => {
     password: '',
     role_id: 0,
   });
+  const handleEditUser = (user) => {
+    setEditingUser(user);
+    setShowEditModal(true);
+  };
+  
 
   useEffect(() => {
     async function fetchAppointments() {
@@ -112,6 +122,40 @@ const Admin = () => {
       [name]: value,
     }));
   };
+
+const handleEditInputChange = (event) => {
+    const { name, value } = event.target;
+    setEditingUser((prevUser) => ({
+      ...prevUser,
+      [name]: value,
+    }));
+  };
+
+  const handleUpdateUser = async () => {
+    try {
+      const response = await fetch(`http://127.0.0.1:5000/users/${editingUser.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(editingUser),
+      });
+  
+      if (response.ok) {
+        // Update the user in the currentUsers state
+        setCurrentUsers((prevUsers) =>
+          prevUsers.map((user) => (user.id === editingUser.id ? editingUser : user))
+        );
+  
+        setShowEditModal(false); // Close the edit modal
+      } else {
+        console.error('Failed to update user');
+      }
+    } catch (error) {
+      console.error('Error updating user:', error);
+    }
+  };
+
 
 
 //to delete user
@@ -291,7 +335,7 @@ const deleteUser = async (userId) => {
                             <td>{user.email}</td>
                             <td>{user.role_id}</td>
                             <td>
-                              <Button variant="info" size="sm">Edit</Button>
+                              <Button variant="info" size="sm" onClick={() => handleEditUser(user)}>Edit</Button>
                               <Button variant="danger" size="sm" onClick={() => handleDeleteUser(user.id)}>Delete</Button>
 
                             </td>
@@ -308,50 +352,62 @@ const deleteUser = async (userId) => {
       </Container>
 
       <Modal show={showModal} onHide={toggleModal}>
-        <Modal.Header closeButton>
-          <Modal.Title>Add Appointment</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form>
-            <Form.Group controlId="title">
-              <Form.Label>Title</Form.Label>
-              <Form.Control type="text" />
-            </Form.Group>
-            <Form.Group controlId="category">
-              <Form.Label>Category</Form.Label>
-              <Form.Control type="text" />
-            </Form.Group>
-            <Form.Group controlId="category">
-              <Form.Label>Date</Form.Label>
-              <Form.Control type="date" />
-            </Form.Group>
-            <Form.Group controlId="category">
-              <Form.Label>Time</Form.Label>
-              <Form.Control type="time" />
-            </Form.Group>
-            <Form.Group controlId="category">
-              <Form.Label>Description</Form.Label>
-              <Form.Control type="text" />
-            </Form.Group>
-            <Form.Group controlId="category">
-              <Form.Label>Status</Form.Label>
-              <Form.Control type="text" />
-            </Form.Group>
-            <Form.Group controlId="category">
-              <Form.Label>Phone Number</Form.Label>
-              <Form.Control type="number" />
-            </Form.Group>
-          </Form>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={toggleModal}>
-            Close
-          </Button>
-          <Button variant="primary">
-            Save
-          </Button>
-        </Modal.Footer>
-      </Modal>
+  <Modal.Header closeButton>
+    <Modal.Title>Add Appointment</Modal.Title>
+  </Modal.Header>
+  <Modal.Body>
+    <Form>
+      <Form.Group controlId="title">
+        <Form.Label>Title</Form.Label>
+        <Form.Control type="text" />
+      </Form.Group>
+      <Form.Group controlId="category">
+        <Form.Label>Category</Form.Label>
+        <Form.Control as="select">
+          <option value="Approved">Business Appointments</option>
+          <option value="Rejected">Staff Appointment</option>
+          <option value="Rescheduled">Departmental Updates</option>
+        </Form.Control>
+      </Form.Group>
+      <Form.Group controlId="date">
+        <Form.Label>Date</Form.Label>
+        <Form.Control type="date" />
+      </Form.Group>
+      <Form.Group controlId="time">
+        <Form.Label>Time</Form.Label>
+        <Form.Control type="time" />
+      </Form.Group>
+      <Form.Group controlId="description">
+        <Form.Label>Description</Form.Label>
+        <Form.Control type="text" />
+      </Form.Group>
+      <Form.Group controlId="status">
+        <Form.Label>Status</Form.Label>
+        <Form.Control as="select">
+          <option value="Approved">Approved</option>
+          <option value="Rejected">Rejected</option>
+          <option value="Rescheduled">Rescheduled</option>
+          <option value="Referred">Referred</option>
+        </Form.Control>
+      </Form.Group>
+      <Form.Group controlId="phoneNumber">
+        <Form.Label>Phone Number</Form.Label>
+        <Form.Control type="number" />
+      </Form.Group>
+    </Form>
+  </Modal.Body>
+  <Modal.Footer>
+    <Button variant="secondary" onClick={toggleModal}>
+      Close
+    </Button>
+    <Button variant="primary">
+      Save
+    </Button>
+  </Modal.Footer>
+</Modal>
+
+  
+
       
       <Modal show={showUserModal} onHide={toggleUserModal}>
         <Modal.Header closeButton>
@@ -406,6 +462,61 @@ const deleteUser = async (userId) => {
           </Button>
         </Modal.Footer>
       </Modal>
+
+      <Modal show={showEditModal} onHide={() => setShowEditModal(false)}>
+  <Modal.Header closeButton>
+    <Modal.Title>Edit User</Modal.Title>
+  </Modal.Header>
+  <Modal.Body>
+    <Form>
+      <Form.Group controlId="name">
+        <Form.Label>Name</Form.Label>
+        <Form.Control
+          type="text"
+          name="name"
+          value={editingUser ? editingUser.name : ''}
+          onChange={handleEditInputChange}
+        />
+      </Form.Group>
+      <Form.Group controlId="email">
+        <Form.Label>Email</Form.Label>
+        <Form.Control
+          type="email"
+          name="email"
+          value={editingUser ? editingUser.email : ''}
+          onChange={handleEditInputChange}
+        />
+      </Form.Group>
+      <Form.Group controlId="password">
+        <Form.Label>Password</Form.Label>
+        <Form.Control
+          type="password"
+          name="password"
+          value={editingUser ? editingUser.password : ''}
+          onChange={handleEditInputChange}
+        />
+      </Form.Group>
+      <Form.Group controlId="role_id">
+        <Form.Label>Role ID</Form.Label>
+        <Form.Control
+          type="number"
+          name="role_id"
+          value={editingUser ? editingUser.role_id : ''}
+          onChange={handleEditInputChange}
+        />
+      </Form.Group>
+    </Form>
+  </Modal.Body>
+  <Modal.Footer>
+    <Button variant="secondary" onClick={() => setShowEditModal(false)}>
+      Close
+    </Button>
+    <Button variant="primary" onClick={handleUpdateUser}>
+      Save Changes
+    </Button>
+  </Modal.Footer>
+</Modal>
+
     </div>
   );
 };
