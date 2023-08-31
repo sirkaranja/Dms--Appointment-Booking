@@ -54,7 +54,24 @@ const Admin = () => {
     setEditingUser(user);
     setShowEditModal(true);
   };
-  
+  const [showReferModal, setShowReferModal] = useState(false);
+  const [selectedAppointmentId, setSelectedAppointmentId] = useState(null);
+  const [referralNumber, setReferralNumber] = useState('');
+
+  const toggleReferModal = () => {
+    setShowReferModal(!showReferModal);
+  };
+
+  const handleReferClick = (appointmentId) => {
+    setSelectedAppointmentId(appointmentId);
+    toggleReferModal();
+  };
+
+  const handleReferAppointment = async () => {
+    // Use selectedAppointmentId and referralNumber to perform referral logic
+    // Make API requests and update data accordingly
+    toggleReferModal();
+  };
 
   useEffect(() => {
     async function fetchAppointments() {
@@ -282,6 +299,7 @@ const deleteUser = async (userId) => {
                           <th>Description</th>
                           <th>Status</th>
                           <th>Phone Number</th>
+                          <th>Actions</th> 
                         </tr>
                       </thead>
                       <tbody>
@@ -295,6 +313,22 @@ const deleteUser = async (userId) => {
                             <td>{appointment.description}</td>
                             <td>{appointment.status}</td>
                             <td>{appointment.phone_number}</td>
+                            <td>
+        {/* Action buttons */}
+        <Button variant="info" size="sm">
+          Update
+        </Button>
+        <Button variant="danger" size="sm">
+          Delete
+        </Button>
+        <Button
+                        variant="primary"
+                        size="sm"
+                        onClick={() => handleReferClick(appointment.id)}
+                      >
+                        Refer
+                      </Button>
+      </td>
                           </tr>
                         ))}
                       </tbody>
@@ -406,6 +440,7 @@ const deleteUser = async (userId) => {
   </Modal.Footer>
 </Modal>
 
+
   
 
       
@@ -516,6 +551,30 @@ const deleteUser = async (userId) => {
     </Button>
   </Modal.Footer>
 </Modal>
+
+<Modal show={showReferModal} onHide={toggleReferModal}>
+<Modal.Body>
+    <Form>
+      <Form.Group controlId="referralNumber">
+        <Form.Label>Enter Referral Phone Number:</Form.Label>
+        <Form.Control
+          type="number"
+          name="referralNumber"
+          value={referralNumber}
+          onChange={(e) => setReferralNumber(e.target.value)}
+        />
+      </Form.Group>
+    </Form>
+  </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={toggleReferModal}>
+            Close
+          </Button>
+          <Button variant="primary" onClick={handleReferAppointment}>
+            Refer
+          </Button>
+        </Modal.Footer>
+      </Modal>
 
     </div>
   );
