@@ -357,7 +357,7 @@ const Admin = () => {
                 onChange={handleUserInputChange}
               />
             </Form.Group>
-            <Form.Group controlId="role">
+            <Form.Group controlId="role_id">
               <Form.Label>Role ID</Form.Label>
               <Form.Control
                 type="number"

@@ -26,7 +26,7 @@ def get_all_users():
             'id': user.id,
             'name': user.name,
             'email': user.email,
-            'role': user.role.name
+            'role': user.role_id
         }
         user_list.append(user_data)
     return jsonify(user_list)
@@ -95,27 +95,30 @@ def update_appointment(appointment_id):
     else:
         return jsonify({"message": "Invalid request method"}), 405
 
-
-#adding new appoitment
 @app.route('/appointments', methods=['POST'])
 def add_appointment():
     if request.method == 'POST':
-        data = request.json
-        new_appointment = Appointment(
-            title=data['title'],
-            description=data['description'],
-            date=date.fromisoformat(data['date']),
-            category=data['category'],
-            time=data['time'],
-            status=data['status'],
-            phone_number=data['phone_number'],
-            user_id=data['user_id']
-        )
-        
-        db.session.add(new_appointment)
-        db.session.commit()
-        
-        return jsonify({"message": "Appointment added successfully"}), 201
+        try:
+            data = request.json
+            new_appointment = Appointment(
+                title=data['title'],
+                description=data['description'],
+                date=date.fromisoformat(data['date']),
+                category=data['category'],
+                time=data['time'],
+                status=data['status'],
+                phone_number=data['phone_number'],
+            )
+            
+            db.session.add(new_appointment)
+            db.session.commit()
+            
+            return jsonify({"message": "Appointment added successfully"}), 201
+        except KeyError as e:
+            return jsonify({"error": f"Missing field: {str(e)}"}), 400
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({"error": "An error occurred while adding the appointment"}), 500
     else:
         return jsonify({"message": "Invalid request method"}), 405
 
@@ -156,22 +159,6 @@ def add_user():
     
 
 
-@app.route('/appointment_counts', methods=['GET'])
-def get_appointment_counts():
-    status_counts = {}
-
-    try:
-        appointments = Appointment.query.all()
-        for appointment in appointments:
-            status = appointment.status
-            if status in status_counts:
-                status_counts[status] += 1
-            else:
-                status_counts[status] = 1
-    except Exception as e:
-        return jsonify({"error": str(e)})
-
-    return jsonify(status_counts)
 
 if __name__ == '__main__':
     app.run(port=5555)
