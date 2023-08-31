@@ -173,5 +173,25 @@ def delete_user(user_id):
         return jsonify({'error': str(e)}), 500
 
 
+#update method for users
+@app.route('/users/<int:user_id>', methods=['PUT'])
+def update_user(user_id):
+    if request.method =='PUT':
+        data= request.json
+        user= User.query.get(user_id)
+
+        if not user:
+            return jsonify({"message":"user not found"}), 400
+        
+        user.name=data['name']
+        user.email=data['email']
+        user.password= data['password']
+        user.role_id= data['role_id']
+
+        db.session.commit()
+        return jsonify({"message":"User updated successfully"}), 200
+    else:
+        return jsonify({'message': "Invalid request method"}), 405
+
 if __name__ == '__main__':
     app.run(port=5555)
