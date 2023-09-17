@@ -82,8 +82,6 @@ def update_appointment(appointment_id):
     else:
         return jsonify({"message": "Invalid request method"}), 405
     
-
-#add new appointment
 @app.route('/appointments', methods=['POST'])
 def add_appointment():
     if request.method == 'POST':
