@@ -40,14 +40,17 @@ const Admin = () => {
 
   const [newAppointment, setNewAppointment] = useState({
     title: '',
-    category: '',
+    category: '', // Initialize category
     date: '',
     time: '',
     description: '',
-    status: '',
+    status: '', // Initialize status
     phone_number: '',
   });
 
+ // Create state variables for category and status
+ const [selectedCategory, setSelectedCategory] = useState('');
+ const [selectedStatus, setSelectedStatus] = useState('');
   const [appointmentCounts, setAppointmentCounts] = useState({
     'Approved': 0,
     'Rejected': 0,
@@ -84,6 +87,27 @@ const Admin = () => {
     // Make API requests and update data accordingly
     toggleReferModal();
   };
+
+const handleDeleteAppointment = async (appointmentId) => {
+  const confirmDelete = window.confirm("Are you sure you want to delete this appointment?");
+  if (confirmDelete) {
+    try {
+      const response = await fetch(`http://127.0.0.1:5000/appointments/${appointmentId}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        // Call fetchAppointments to refresh the appointment data
+        fetchAppointments();
+      } else {
+        console.error('Failed to delete appointment');
+      }
+    } catch (error) {
+      console.error('Error deleting appointment:', error);
+    }
+  }
+};
+
 
   useEffect(() => {
     async function fetchAppointments() {
@@ -212,6 +236,7 @@ const deleteUser = async (userId) => {
   }
 };
 
+
 const handleAddAppointment = async () => {
   try {
     const response = await fetch('http://127.0.0.1:5000/appointments', {
@@ -219,12 +244,27 @@ const handleAddAppointment = async () => {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(newAppointment),
+      body: JSON.stringify({
+        ...newAppointment,
+        category: selectedCategory, // Set category
+        status: selectedStatus, // Set status
+      }),
     });
 
     if (response.ok) {
+      // Clear the form input fields
+      setNewAppointment({
+        title: '',
+        category: '',
+        date: '',
+        time: '',
+        description: '',
+        status: '',
+        phone_number: '',
+      });
+
+      // Fetch the updated list of appointments to refresh the table
       fetchAppointments();
-      toggleModal();
     } else {
       console.error('Failed to add appointment');
     }
@@ -310,6 +350,7 @@ const handleAddAppointment = async () => {
                 </Row>
               </div>
             )}
+      
 
             {window.location.pathname === '/appointments' && (
               <div>
@@ -351,7 +392,7 @@ const handleAddAppointment = async () => {
         <Button variant="info" size="sm">
           Update
         </Button>
-        <Button variant="danger" size="sm">
+        <Button variant="danger" size="sm" onClick={() => handleDeleteAppointment(appointment.id)}>
           Delete
         </Button>
         <Button
@@ -418,57 +459,107 @@ const handleAddAppointment = async () => {
         </Row>
       </Container>
       <Modal show={showModal} onHide={toggleModal}>
-        <Modal.Header closeButton>
-          <Modal.Title>Add Appointment</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form>
-            <Form.Group controlId="title">
-              <Form.Label>Title</Form.Label>
-              <Form.Control
-                type="text"
-                name="title"
-                value={newAppointment.title}
-                onChange={(e) =>
-                  setNewAppointment({
-                    ...newAppointment,
-                    title: e.target.value,
-                  })
-                }
-              />
-            </Form.Group>
+  <Modal.Header closeButton>
+    <Modal.Title>Add Appointment</Modal.Title>
+  </Modal.Header>
+  <Modal.Body>
+    <Form>
+      <Form.Group controlId="title">
+        <Form.Label>Title</Form.Label>
+        <Form.Control
+          type="text"
+          name="title"
+          value={newAppointment.title}
+          onChange={(e) =>
+            setNewAppointment({
+              ...newAppointment,
+              title: e.target.value,
+            })
+          }
+        />
+      </Form.Group>
       <Form.Group controlId="category">
         <Form.Label>Category</Form.Label>
-        <Form.Control as="select">
-          <option value="Approved">Business Appointments</option>
-          <option value="Rejected">Staff Appointment</option>
-          <option value="Rescheduled">Departmental Updates</option>
+        <Form.Control
+          as="select"
+          value={selectedCategory}
+          onChange={(e) => setSelectedCategory(e.target.value)}
+        >
+          <option value="">Select Category</option>
+          <option value="staff appointment">Staff Appointment</option>
+          <option value="business appointment">Business Appointment</option>
+          <option value="departmental updates">Departmental Updates</option>
         </Form.Control>
       </Form.Group>
       <Form.Group controlId="date">
         <Form.Label>Date</Form.Label>
-        <Form.Control type="date" />
+        <Form.Control
+          type="date"
+          name="date"
+          value={newAppointment.date}
+          onChange={(e) =>
+            setNewAppointment({
+              ...newAppointment,
+              date: e.target.value,
+            })
+          }
+        />
       </Form.Group>
       <Form.Group controlId="time">
         <Form.Label>Time</Form.Label>
-        <Form.Control type="time" />
+        <Form.Control
+          type="time"
+          name="time"
+          value={newAppointment.time}
+          onChange={(e) =>
+            setNewAppointment({
+              ...newAppointment,
+              time: e.target.value,
+            })
+          }
+        />
       </Form.Group>
       <Form.Group controlId="description">
         <Form.Label>Description</Form.Label>
-        <Form.Control type="text" />
+        <Form.Control
+          type="text"
+          name="description"
+          value={newAppointment.description}
+          onChange={(e) =>
+            setNewAppointment({
+              ...newAppointment,
+              description: e.target.value,
+            })
+          }
+        />
       </Form.Group>
       <Form.Group controlId="status">
         <Form.Label>Status</Form.Label>
-        <Form.Control as="select">
-          <option value="Approved">Approved</option>
-          <option value="Rejected">Rejected</option>
-          <option value="Rescheduled">Rescheduled</option>
-          <option value="Referred">Referred</option>
+        <Form.Control
+          as="select"
+          value={selectedStatus}
+          onChange={(e) => setSelectedStatus(e.target.value)}
+        >
+          <option value="">Select Status</option>
+          <option value="rejected">Rejected</option>
+          <option value="approved">Approved</option>
+          <option value="rescheduled">Rescheduled</option>
+          <option value="referred">Referred</option>
         </Form.Control>
       </Form.Group>
       <Form.Group controlId="phoneNumber">
         <Form.Label>Phone Number</Form.Label>
-        <Form.Control type="number" />
+        <Form.Control
+          type="number"
+          name="phone_number"
+          value={newAppointment.phone_number}
+          onChange={(e) =>
+            setNewAppointment({
+              ...newAppointment,
+              phone_number: e.target.value,
+            })
+          }
+        />
       </Form.Group>
     </Form>
   </Modal.Body>
@@ -477,12 +568,10 @@ const handleAddAppointment = async () => {
       Close
     </Button>
     <Button variant="primary" onClick={handleAddAppointment}>
-            Save
-          </Button>
+      Save
+    </Button>
   </Modal.Footer>
 </Modal>
-
-
   
 
       
